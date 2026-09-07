@@ -2,139 +2,58 @@ import streamlit as st
 import numpy as np
 import pickle
 
-# -------------------------------------------------
-# Page Configuration
-# -------------------------------------------------
+# Page configuration
 st.set_page_config(
     page_title="Health Insurance Cost Prediction",
     page_icon="🏥",
     layout="centered"
 )
 
-# -------------------------------------------------
-# Custom Dark UI
-# -------------------------------------------------
+# Dark UI styling
 st.markdown("""
 <style>
-
-    /* Main background */
     .stApp {
-        background: linear-gradient(135deg, #0b0f14, #151b24);
+        background-color: #0e1117;
         color: white;
     }
 
-    /* Main content */
-    .block-container {
-        max-width: 850px;
-        padding-top: 3rem;
-        padding-bottom: 3rem;
-    }
-
-    /* Title */
-    .main-title {
+    h1 {
         text-align: center;
+        color: white;
         font-size: 42px;
-        font-weight: 700;
-        margin-bottom: 8px;
-        color: #ffffff;
     }
 
-    /* Subtitle */
-    .subtitle {
-        text-align: center;
-        font-size: 17px;
-        color: #b8c1cc;
-        margin-bottom: 35px;
-    }
-
-    /* Section headings */
-    .section-title {
-        font-size: 22px;
-        font-weight: 600;
-        margin-top: 15px;
-        margin-bottom: 18px;
-        color: #ffffff;
-    }
-
-    /* Input labels */
-    label {
-        color: #e6e6e6 !important;
-        font-weight: 500 !important;
-    }
-
-    /* Input boxes */
-    div[data-baseweb="input"] {
-        background-color: #202731;
-        border-radius: 8px;
+    .stMarkdown, label {
+        color: white !important;
     }
 
     div[data-baseweb="select"] > div {
-        background-color: #202731;
-        border-radius: 8px;
+        background-color: #262730 !important;
+        color: white !important;
     }
 
-    /* Button */
-    .stButton > button {
-        width: 100%;
-        height: 52px;
-        border-radius: 10px;
-        border: none;
-        background: linear-gradient(90deg, #2563eb, #3b82f6);
-        color: white;
-        font-size: 18px;
-        font-weight: 600;
-        margin-top: 20px;
+    div[data-baseweb="select"] span {
+        color: white !important;
     }
 
-    .stButton > button:hover {
-        background: linear-gradient(90deg, #1d4ed8, #2563eb);
-        color: white;
+    input {
+        background-color: #262730 !important;
+        color: white !important;
     }
 
-    /* Result box */
-    .result-box {
-        background: #17202b;
-        border: 1px solid #3b82f6;
-        border-radius: 12px;
-        padding: 20px;
-        margin-top: 25px;
-        text-align: center;
+    button {
+        border-radius: 8px !important;
     }
-
-    .result-title {
-        font-size: 16px;
-        color: #aeb8c4;
-    }
-
-    .result-value {
-        font-size: 30px;
-        font-weight: 700;
-        color: #60a5fa;
-        margin-top: 5px;
-    }
-
-    /* Info box */
-    .info-box {
-        background: #151c25;
-        border-radius: 10px;
-        padding: 15px;
-        margin-top: 25px;
-        text-align: center;
-        color: #aeb8c4;
-        font-size: 14px;
-    }
-
 </style>
 """, unsafe_allow_html=True)
 
 
-# -------------------------------------------------
-# Load Model
-# -------------------------------------------------
+# Load model
 with open("New_RFmodel.pkl", "rb") as f:
     model = pickle.load(f)
 
-# Load scaler if used
+
+# Load scaler if available
 try:
     with open("New_scalar.pkl", "rb") as f:
         scaler = pickle.load(f)
@@ -142,78 +61,51 @@ except:
     scaler = None
 
 
-# -------------------------------------------------
-# Header
-# -------------------------------------------------
-st.markdown(
-    '<div class="main-title">🏥 Health Insurance Cost Prediction</div>',
-    unsafe_allow_html=True
+# Title
+st.title("Health Insurance Cost Prediction")
+
+st.write("Enter the customer details to predict insurance cost")
+
+
+# User inputs - one by one
+age = st.number_input(
+    "Age",
+    min_value=0,
+    max_value=100,
+    value=30
 )
 
-st.markdown(
-    '<div class="subtitle">'
-    'Enter customer details to estimate the insurance cost using a machine learning model.'
-    '</div>',
-    unsafe_allow_html=True
+bmi = st.number_input(
+    "BMI",
+    min_value=10.0,
+    max_value=60.0,
+    value=25.0
+)
+
+children = st.number_input(
+    "Number of Children",
+    min_value=0,
+    max_value=5,
+    value=0
+)
+
+gender = st.selectbox(
+    "Gender",
+    ["Female", "Male"]
+)
+
+smoker = st.selectbox(
+    "Smoker",
+    ["No", "Yes"]
+)
+
+region = st.selectbox(
+    "Region",
+    ["northeast", "northwest", "southeast", "southwest"]
 )
 
 
-# -------------------------------------------------
-# Customer Details
-# -------------------------------------------------
-st.markdown(
-    '<div class="section-title">👤 Customer Details</div>',
-    unsafe_allow_html=True
-)
-
-col1, col2 = st.columns(2)
-
-with col1:
-
-    age = st.number_input(
-        "🎂 Age",
-        min_value=0,
-        max_value=100,
-        value=30
-    )
-
-    bmi = st.number_input(
-        "⚖️ BMI",
-        min_value=10.0,
-        max_value=60.0,
-        value=25.0
-    )
-
-    children = st.number_input(
-        "👶 Number of Children",
-        min_value=0,
-        max_value=5,
-        value=0
-    )
-
-
-with col2:
-
-    gender = st.selectbox(
-        "⚥ Gender",
-        ["Female", "Male"]
-    )
-
-    smoker = st.selectbox(
-        "🚬 Smoker",
-        ["No", "Yes"]
-    )
-
-    region = st.selectbox(
-        "📍 Region",
-        ["northeast", "northwest", "southeast", "southwest"]
-    )
-
-
-# -------------------------------------------------
-# Manual Encoding
-# -------------------------------------------------
-
+# Manual encoding
 gender_male = 1 if gender == "Male" else 0
 
 smoker_yes = 1 if smoker == "Yes" else 0
@@ -222,13 +114,8 @@ region_northwest = 1 if region == "northwest" else 0
 region_southeast = 1 if region == "southeast" else 0
 region_southwest = 1 if region == "southwest" else 0
 
-# northeast → all zeros
 
-
-# -------------------------------------------------
-# Combine Inputs
-# -------------------------------------------------
-
+# Combine inputs
 input_data = np.array([[
     age,
     bmi,
@@ -241,45 +128,16 @@ input_data = np.array([[
 ]])
 
 
-# -------------------------------------------------
-# Apply Scaling
-# -------------------------------------------------
-
+# Apply scaling if used
 if scaler is not None:
     input_data = scaler.transform(input_data)
 
 
-# -------------------------------------------------
-# Prediction
-# -------------------------------------------------
-
-st.markdown("---")
-
-if st.button("🔮 Predict Insurance Cost"):
+# Prediction button
+if st.button("Predict Insurance Cost", use_container_width=True):
 
     prediction = model.predict(input_data)
 
-    st.markdown(
-        f"""
-        <div class="result-box">
-            <div class="result-title">Estimated Insurance Cost</div>
-            <div class="result-value">₹ {prediction[0]:,.2f}</div>
-        </div>
-        """,
-        unsafe_allow_html=True
+    st.success(
+        f"Estimated Insurance Cost: ₹ {prediction[0]:,.2f}"
     )
-
-
-# -------------------------------------------------
-# Footer
-# -------------------------------------------------
-
-st.markdown(
-    """
-    <div class="info-box">
-        📊 This application uses a Machine Learning Regression Model
-        to estimate health insurance costs based on customer details.
-    </div>
-    """,
-    unsafe_allow_html=True
-)

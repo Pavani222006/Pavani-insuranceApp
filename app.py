@@ -13,7 +13,7 @@ try:
 except:
     scaler = None
 
-st.title("Edunet Foundation's Health Insurance Cost Prediction")
+st.title("Health Insurance Cost Prediction🏥")
 st.write("Enter the customer details to predict insurance cost")
 
 # User inputs
